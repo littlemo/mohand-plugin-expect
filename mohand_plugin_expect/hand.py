@@ -1,6 +1,5 @@
-from mohand.hand import HandDict
+from mohand.hand import hand
 
-hand = HandDict()
 # print('HandDict@mohand_plugin_expect:', hand)
 # print('HandDict@mohand_plugin_expect:', id(hand))
 
