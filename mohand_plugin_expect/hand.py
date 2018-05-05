@@ -1,4 +1,4 @@
-from mohand.hand import hand
+from mohand.hands import hand
 
 # print('HandDict@mohand_plugin_expect:', hand)
 # print('HandDict@mohand_plugin_expect:', id(hand))
