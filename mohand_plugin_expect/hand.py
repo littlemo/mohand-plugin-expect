@@ -47,9 +47,10 @@ def expect(*dargs, **dkwargs):
         def _wrapper(*args, **kwargs):
             log.debug("decrator param: {} {}".format(dargs, dkwargs))
             log.debug("function param: {} {}".format(args, kwargs))
-            kwargs.pop('cmd', None)
-            kwargs.pop('timeout', None)
-            return func(*args, **kwargs)
+            with Child(*args, **kwargs) as c:
+                kwargs.pop('cmd', None)
+                kwargs.pop('timeout', None)
+                func(c, *args, **kwargs)
         return _wrapper
     return wrapper if not invoked else wrapper(func)
 
