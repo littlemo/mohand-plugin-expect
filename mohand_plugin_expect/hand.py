@@ -26,6 +26,11 @@ def expect(*dargs, **dkwargs):
         此处的 ``expect`` 装饰器本身是应该不支持无参数装饰的，但考虑到其作为样例实现，
         故将其实现为兼容两种传参的装饰器
 
+    :param int log_level: 日志输出等级，默认为： ``logging.INFO``
+    :param str cmd: 待执行的spawn命令字串
+    :param int timeout: 动作执行的超时时间
+    :return: 被封装后的函数
+    :rtype: function
     """
     invoked = bool(len(dargs) == 1 and not dkwargs and callable(dargs[0]))
     if invoked:
