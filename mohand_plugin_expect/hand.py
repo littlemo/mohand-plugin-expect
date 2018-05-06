@@ -32,9 +32,6 @@ def expect(*dargs, **dkwargs):
         func = dargs[0]
 
     def wrapper(func):
-        log_level = dkwargs.get('log_level', logging.INFO)
-        log.setLevel(log_level)
-
         @hand._click.command(
             name=func.__name__.lower(),
             help=func.__doc__)
@@ -48,6 +45,9 @@ def expect(*dargs, **dkwargs):
             default=dkwargs.get('timeout'),
             help='expect 的超时时间')
         def _wrapper(*args, **kwargs):
+            log_level = dkwargs.pop('log_level', logging.INFO)
+            log.setLevel(log_level)
+
             log.debug("decrator param: {} {}".format(dargs, dkwargs))
             log.debug("function param: {} {}".format(args, kwargs))
             with Child(*args, **kwargs) as c:
