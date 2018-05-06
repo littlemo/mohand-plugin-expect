@@ -44,8 +44,8 @@ def expect(*dargs, **dkwargs):
             default=dkwargs.get('timeout'),
             help='expect 的超时时间')
         def _wrapper(*args, **kwargs):
-            print("decrator param:", dargs, dkwargs)
-            print("function param:", args, kwargs)
+            log.debug("decrator param: {} {}".format(dargs, dkwargs))
+            log.debug("function param: {} {}".format(args, kwargs))
             kwargs.pop('cmd', None)
             kwargs.pop('timeout', None)
             return func(*args, **kwargs)
