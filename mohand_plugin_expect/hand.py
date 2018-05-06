@@ -32,6 +32,9 @@ def expect(*dargs, **dkwargs):
         func = dargs[0]
 
     def wrapper(func):
+        log_level = dkwargs.get('log_level', logging.INFO)
+        log.setLevel(log_level)
+
         @hand._click.command(
             name=func.__name__.lower(),
             help=func.__doc__)
