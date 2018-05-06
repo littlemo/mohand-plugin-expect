@@ -1,5 +1,6 @@
 import sys
 import logging
+import pexpect
 from mohand.hands import hand
 
 LOG_FORMAT = "[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s"
@@ -51,3 +52,30 @@ def expect(*dargs, **dkwargs):
             return func(*args, **kwargs)
         return _wrapper
     return wrapper if not invoked else wrapper(func)
+
+
+class Child(object):
+    """
+    pexpect实例创建后的返回子线程，支持一系列接口方法
+    """
+    def __init__(self, *args, **kwargs):
+        _cmd = kwargs.get('cmd', None)
+        if not _cmd:
+            raise ValueError('cmd 值错误，不可为空')
+        log.info(_cmd)
+        self.timeout = kwargs.get('timeout', 30)
+        self.child = pexpect.spawn(_cmd)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        if exception_type is None:
+            self.child.interact()
+            return False
+        elif exception_type is ValueError:
+            # 返回 False 将异常抛出
+            return False
+        else:
+            log.error('other error: {}\n{}'.format(exception_value, traceback))
+            return False
