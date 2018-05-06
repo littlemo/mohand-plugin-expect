@@ -1,4 +1,14 @@
+import sys
+import logging
 from mohand.hands import hand
+
+LOG_FORMAT = "[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s"
+format_ = logging.Formatter(LOG_FORMAT)
+sh = logging.StreamHandler(stream=sys.stdout)
+sh.setFormatter(format_)
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+log.addHandler(sh)
 
 
 def expect(*dargs, **dkwargs):
