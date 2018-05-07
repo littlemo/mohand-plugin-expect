@@ -78,7 +78,7 @@ class Child(object):
     def __enter__(self):
         return self
 
-    def action(self, expect=None, sendline=None, before=None, **kwargs):
+    def action(self, expect, sendline, before='', retry=3, **kwargs):
         """
         执行一个action，当检测到符合指定 ``before`` 的 ``expect`` 后，
         发送 ``sendline``
@@ -86,7 +86,8 @@ class Child(object):
         :param str expect: 期望的输入匹配行
         :param sendline: 发送一行字串，若为正则表达式，则发送匹配到的结果字串
         :type sendline: str or regex
-        :param str before: 用来辅助判定期望的输入匹配行
+        :param str before: 可选，用来辅助判定期望的输入匹配行，默认为 ``''``
+        :param int retry: 可选，默认为 ``3`` ，重试次数
         """
         pass
 
