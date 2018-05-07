@@ -89,7 +89,19 @@ class Child(object):
         :param str before: 可选，用来辅助判定期望的输入匹配行，默认为 ``''``
         :param int retry: 可选，默认为 ``3`` ，重试次数
         """
-        pass
+        for i in range(0, retry):
+            self.child.expect(expect)
+            _before = self.child.before.decode('utf-8')
+            if before not in _before:
+                continue
+            if not isinstance(sendline, str):
+                # 如果入参不是字符串，则认为其是正则对象，
+                # 尝试在 before 中匹配到真正的 sendline 字串
+                pass
+            self.child.sendline(sendline)
+            break
+        else:
+            log.warning('重试次数用尽，仍未找到: {}'.format(expect))
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is None:
