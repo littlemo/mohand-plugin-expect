@@ -90,6 +90,7 @@ class Child(object):
         :param int retry: 可选，默认为 ``3`` ，重试次数
         """
         for i in range(0, retry):
+            log.debug('第{}次执行'.format(i + 1))
             self.child.expect(expect)
             _before = self.child.before.decode('utf-8')
             _after = self.child.after.decode('utf-8')
