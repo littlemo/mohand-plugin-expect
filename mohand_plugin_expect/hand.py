@@ -100,7 +100,11 @@ class Child(object):
             if not isinstance(sendline, str):
                 # 如果入参不是字符串，则认为其是正则对象，
                 # 尝试在 before 中匹配到真正的 sendline 字串
-                pass
+                match = sendline.search(_before)
+                if not match:
+                    log.error('未从传入的sendline正则中匹配到字串')
+                    continue
+                sendline = match.groups()[0]
             self.child.sendline(sendline)
             break
         else:
