@@ -105,6 +105,7 @@ class Child(object):
                     log.error('未从传入的sendline正则中匹配到字串')
                     continue
                 sendline = match.groups()[0]
+            log.debug('待发送字串: {}'.format(sendline))
             self.child.sendline(sendline)
             break
         else:
