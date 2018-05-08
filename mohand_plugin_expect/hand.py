@@ -92,6 +92,8 @@ class Child(object):
         for i in range(0, retry):
             self.child.expect(expect)
             _before = self.child.before.decode('utf-8')
+            _after = self.child.after.decode('utf-8')
+            sys.stdout.write('{}{}'.format(_before, _after))
             if before not in _before:
                 continue
             if not isinstance(sendline, str):
