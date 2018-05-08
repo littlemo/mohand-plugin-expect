@@ -71,7 +71,7 @@ class Child(object):
         _cmd = kwargs.get('cmd', None)
         if not _cmd:
             raise ValueError('cmd 值错误，不可为空')
-        log.info(_cmd)
+        hand._click.echo(_cmd)
         self.timeout = kwargs.get('timeout', 30)
         self.child = pexpect.spawn(_cmd)
 
