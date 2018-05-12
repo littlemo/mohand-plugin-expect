@@ -33,7 +33,7 @@ def expect(*dargs, **dkwargs):
         此处的 ``expect`` 装饰器本身是应该不支持无参数装饰的，但考虑到其作为样例实现，
         故将其实现为兼容两种传参的装饰器
 
-    :param int log_level: 日志输出等级，默认为： ``logging.INFO``
+    :param int log_level: 当前子命令的日志输出等级，默认为： ``logging.INFO``
     :param str cmd: 用于构造上下文环境的终端命令，将传入 pexpect.spawn
     :param str encoding: 可选，spawn命令执行时的指定编码，默认为 ``utf-8``
     :param int timeout: 可选，执行 spawn 的超时时间，默认为 ``30`` 秒
