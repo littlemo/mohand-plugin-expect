@@ -35,7 +35,7 @@ def expect(*dargs, **dkwargs):
 
     :param int log_level: 日志输出等级，默认为： ``logging.INFO``
     :param str cmd: 待执行的spawn命令字串
-    :param int timeout: 动作执行的超时时间
+    :param int timeout: 可选，执行 spawn 的超时时间，默认为 ``30`` 秒
     :return: 被封装后的函数
     :rtype: function
     """
@@ -54,7 +54,7 @@ def expect(*dargs, **dkwargs):
         @hand._click.option(
             '--timeout', '-t',
             type=hand._click.INT,
-            default=dkwargs.get('timeout'),
+            default=dkwargs.get('timeout', 30),
             help='expect 的超时时间')
         def _wrapper(*args, **kwargs):
             log_level = dkwargs.pop('log_level', logging.INFO)
@@ -81,8 +81,9 @@ class Child(object):
         if not _cmd:
             raise ValueError('cmd 值错误，不可为空')
         hand._click.echo(_cmd)
-        self.timeout = kwargs.get('timeout', 30)
-        self.child = Child.child = pexpect.spawn(_cmd)
+        _timeout = kwargs.get('timeout', 30)
+        log.debug('spawn执行的超时时间: {}s'.format(_timeout))
+        self.child = Child.child = pexpect.spawn(_cmd, timeout=_timeout)
         signal.signal(signal.SIGWINCH, Child.sigwinch_passthrough)
 
     def __enter__(self):
