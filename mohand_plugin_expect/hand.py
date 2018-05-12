@@ -1,6 +1,12 @@
 import sys
 import logging
+import struct
+import fcntl
+import termios
+import signal
+
 import pexpect
+
 from mohand.hands import hand
 
 LOG_FORMAT = "[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s"
@@ -67,16 +73,32 @@ class Child(object):
     """
     pexpect实例创建后的返回子线程，支持一系列接口方法
     """
+    child = None
+
     def __init__(self, *args, **kwargs):
         _cmd = kwargs.get('cmd', None)
         if not _cmd:
             raise ValueError('cmd 值错误，不可为空')
         hand._click.echo(_cmd)
         self.timeout = kwargs.get('timeout', 30)
-        self.child = pexpect.spawn(_cmd)
+        self.child = Child.child = pexpect.spawn(_cmd)
+        signal.signal(signal.SIGWINCH, Child.sigwinch_passthrough)
 
     def __enter__(self):
         return self
+
+    @staticmethod
+    def sigwinch_passthrough(sig, data):
+        """
+        处理窗口尺寸变化信号，并相应更新 tty 窗口大小设置
+        """
+        log.debug('Received signal: {}, {}'.format(sig, data))
+        s = struct.pack("HHHH", 0, 0, 0, 0)
+        a = struct.unpack(
+            'hhhh', fcntl.ioctl(sys.stdout.fileno(), termios.TIOCGWINSZ, s))
+        if Child.child and not Child.child.closed:
+            Child.child.setwinsize(a[0], a[1])
+            log.debug('重设窗口大小为: {} 行 | {} 列'.format(a[0], a[1]))
 
     def action(self, expect, sendline, before='', retry=3, **kwargs):
         """
@@ -113,6 +135,8 @@ class Child(object):
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is None:
+            # 将控制权交换给用户前，强制触发窗口尺寸变化信号，初始化窗口大小设置
+            self.sigwinch_passthrough(None, None)
             self.child.interact()
             return False
         elif exception_type is ValueError:
