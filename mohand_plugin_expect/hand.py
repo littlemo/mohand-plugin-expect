@@ -34,7 +34,7 @@ def expect(*dargs, **dkwargs):
         故将其实现为兼容两种传参的装饰器
 
     :param int log_level: 日志输出等级，默认为： ``logging.INFO``
-    :param str cmd: 待执行的spawn命令字串
+    :param str cmd: 用于构造上下文环境的终端命令，将传入 pexpect.spawn
     :param str encoding: 可选，spawn命令执行时的指定编码，默认为 ``utf-8``
     :param int timeout: 可选，执行 spawn 的超时时间，默认为 ``30`` 秒
     :return: 被封装后的函数
@@ -48,29 +48,14 @@ def expect(*dargs, **dkwargs):
         @hand._click.command(
             name=func.__name__.lower(),
             help=func.__doc__)
-        @hand._click.option(
-            '--cmd',
-            default=dkwargs.get('cmd'),
-            help='用于构造上下文环境的终端命令，将传入 pexpect.spawn')
-        @hand._click.option(
-            '--encoding',
-            default=dkwargs.get('encoding', 'utf-8'),
-            help='spawn命令执行指定的编码，默认为 UTF-8')
-        @hand._click.option(
-            '--timeout', '-t',
-            type=hand._click.INT,
-            default=dkwargs.get('timeout', 30),
-            help='expect 的超时时间')
         def _wrapper(*args, **kwargs):
             log_level = dkwargs.pop('log_level', logging.INFO)
             log.setLevel(log_level)
 
             log.debug("decrator param: {} {}".format(dargs, dkwargs))
             log.debug("function param: {} {}".format(args, kwargs))
-            with Child(*args, **kwargs) as c:
-                kwargs.pop('cmd', None)
-                kwargs.pop('timeout', None)
-                kwargs.pop('encoding', None)
+
+            with Child(*dargs, **dkwargs) as c:
                 func(c, *args, **kwargs)
         return _wrapper
     return wrapper if not invoked else wrapper(func)
