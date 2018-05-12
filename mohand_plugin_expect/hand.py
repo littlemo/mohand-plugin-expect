@@ -102,7 +102,9 @@ class Child(object):
             Child.child.setwinsize(a[0], a[1])
             log.debug('重设窗口大小为: {} 行 | {} 列'.format(a[0], a[1]))
 
-    def action(self, expect, sendline, before='', retry=3, **kwargs):
+    def action(
+            self, expect, sendline, before='',
+            retry=3, timeout=-1, expect_callback=None, **kwargs):
         """
         执行一个action，当检测到符合指定 ``before`` 的 ``expect`` 后，
         发送 ``sendline``
@@ -113,10 +115,17 @@ class Child(object):
         :type sendline: str or regex
         :param str before: 可选，用来辅助判定期望的输入匹配行，默认为 ``''``
         :param int retry: 可选，默认为 ``3`` ，重试次数
+        :param int timeout: 可选，单位秒，默认为 ``-1`` (无限阻塞)，
+            单条动作中 ``expect`` 的超时时间
+        :param expect_callback: expect 的回调函数，传入 expect 列表中匹配到的对象的索引，
+            可在其中执行定制的处理逻辑
+        :type expect_callback: function(index)
         """
         for i in range(0, retry):
             log.debug('第{}次执行'.format(i + 1))
-            self.child.expect(expect)
+            _index = self.child.expect(expect, timeout=timeout)
+            if expect_callback and callable(expect_callback):
+                expect_callback(_index)
             _before = self.child.before.decode('utf-8')
             _after = self.child.after.decode('utf-8')
             sys.stdout.write('{}{}'.format(_before, _after))
