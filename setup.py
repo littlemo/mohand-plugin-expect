@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from mohand_plugin_expect.version import get_setup_version
 
 
 setup(
@@ -8,7 +9,7 @@ setup(
     author_email='moore@moorehy.com',
     maintainer='littlemo',
     maintainer_email='moore@moorehy.com',
-    version='0.0.0',
+    version=get_setup_version(),
     description='MoHand插件，用以提供可自动控制其他终端应用的任务支持',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
