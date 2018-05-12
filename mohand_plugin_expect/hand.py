@@ -35,6 +35,7 @@ def expect(*dargs, **dkwargs):
 
     :param int log_level: 日志输出等级，默认为： ``logging.INFO``
     :param str cmd: 待执行的spawn命令字串
+    :param str encoding: 可选，spawn命令执行时的指定编码，默认为 ``utf-8``
     :param int timeout: 可选，执行 spawn 的超时时间，默认为 ``30`` 秒
     :return: 被封装后的函数
     :rtype: function
@@ -52,6 +53,10 @@ def expect(*dargs, **dkwargs):
             default=dkwargs.get('cmd'),
             help='用于构造上下文环境的终端命令，将传入 pexpect.spawn')
         @hand._click.option(
+            '--encoding',
+            default=dkwargs.get('encoding', 'utf-8'),
+            help='spawn命令执行指定的编码，默认为 UTF-8')
+        @hand._click.option(
             '--timeout', '-t',
             type=hand._click.INT,
             default=dkwargs.get('timeout', 30),
@@ -65,6 +70,7 @@ def expect(*dargs, **dkwargs):
             with Child(*args, **kwargs) as c:
                 kwargs.pop('cmd', None)
                 kwargs.pop('timeout', None)
+                kwargs.pop('encoding', None)
                 func(c, *args, **kwargs)
         return _wrapper
     return wrapper if not invoked else wrapper(func)
@@ -83,7 +89,9 @@ class Child(object):
         hand._click.echo(_cmd)
         _timeout = kwargs.get('timeout', 30)
         log.debug('spawn执行的超时时间: {}s'.format(_timeout))
-        self.child = Child.child = pexpect.spawn(_cmd, timeout=_timeout)
+        _encodeing = kwargs.get('encoding', 'utf-8')
+        self.child = Child.child = pexpect.spawn(
+            _cmd, timeout=_timeout, encoding=_encodeing)
         signal.signal(signal.SIGWINCH, Child.sigwinch_passthrough)
 
     def __enter__(self):
@@ -126,8 +134,8 @@ class Child(object):
             _index = self.child.expect(expect, timeout=timeout)
             if expect_callback and callable(expect_callback):
                 expect_callback(_index)
-            _before = self.child.before.decode('utf-8')
-            _after = self.child.after.decode('utf-8')
+            _before = self.child.before
+            _after = self.child.after
             sys.stdout.write('{}{}'.format(_before, _after))
             if before not in _before:
                 continue
