@@ -1,3 +1,4 @@
+import re
 import sys
 import logging
 import struct
@@ -119,9 +120,8 @@ class Child(object):
             sys.stdout.write('{}{}'.format(_before, _after))
             if before not in _before:
                 continue
-            if not isinstance(sendline, str):
-                # 如果入参不是字符串，则认为其是正则对象，
-                # 尝试在 before 中匹配到真正的 sendline 字串
+            if isinstance(sendline, type(re.compile(''))):
+                # 如果入参是正则对象，则尝试在 before 中匹配到真正的 sendline 字串
                 match = sendline.search(_before)
                 if not match:
                     log.error('未从传入的sendline正则中匹配到字串')
