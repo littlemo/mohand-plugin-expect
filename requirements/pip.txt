@@ -1,2 +1,2 @@
-pexpect~=4.5.0
-mohand~=0.0.0.dev0
+pexpect>=4.5.0
+mohand>=1.0.0
