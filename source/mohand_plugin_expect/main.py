@@ -4,6 +4,8 @@ from mohand_plugin_expect.version import get_cli_version
 
 
 class ExpectHand(hands.HandBase):
+    '''可用于自动化登录堡垒机完成跳转选择、账户密码输入等操作'''
+
     def register(self):
         return expect
 
