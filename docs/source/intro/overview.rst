@@ -37,6 +37,34 @@
 
     如果您感兴趣的话，可以了解下 `virtualenvwrapper`_ ，用其来管理虚拟环境可谓丝般顺滑！
 
+使用说明
+========
+
+接下来我们将模拟一个堡垒机登录场景，并通过本包提供的 ``expect`` 装饰器来实现自动化登录，
+场景如下::
+
+    ssh -o PreferredAuthentications=password moore@bastion -p 22
+    moore@bastion's password:
+    ********************************************************************************
+    *                      Shterm Interactive Terminal v3.2.4                      *
+    * Copyright (c) 2006-2018 Zhejiang Qizhi Tech. Co., Ltd.  All rights reserved. *
+    ********************************************************************************
+
+
+    System List
+      No: System
+       0: All Systems
+       1: idc-arch
+       2: idc-dev
+       3: idc-web
+    Please select system:2
+
+    Connecting to any@dev-moore.idc1(10.10.2.213) ...
+    login: moore
+    moore@10.10.2.213's password:
+    Last login: Tue May 15 10:06:23 2018 from bastion
+    moore@dev-moore.idc1:~$
+
 
 .. _MoHand: http://mohand.rtfd.io/
 .. _pexpect: http://pexpect.rtfd.io/
