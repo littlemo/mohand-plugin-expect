@@ -122,9 +122,39 @@
 
     $ mohand test
 
+由于在 ``mohand.hands.hand`` 中封装了 `click`_ 库，故我们还可以根据实际需求来添加额外的传参，
+具体可以参考其官方文档，以下提供一种思路::
+
+    FUNC_DICT = {
+        'project': 'cd path/to/project',
+        'mongo': 'mongo xxoo:2000/db_name',
+    }
+
+    @hand._click.option(
+        '--workspace', '-w',
+        type=hand._click.Choice(FUNC_DICT.keys()),
+        help='工作空间')
+    @hand.expect(
+        cmd='ssh -o PreferredAuthentications=password moore@bastion -p 22')
+    def test(o, workspace):
+        """自动登录测试"""
+        ...
+
+        if workspace:
+            o.action(
+                expect=re.compile(r'.*@.*:.*~.*\$'),
+                sendline=FUNC_DICT.get(workspace))
+
+以上，提供了一个可选的关键字参数 ``--workspace`` ，可通过在调用时传入此参数，
+来达到额外进入工作空间的目的，调用命令如下::
+
+    $ mohand test -w project  # 自动登录，并进入项目所在路径
+    $ mohand test -w mongo    # 自动登录，并进入指定mongo数据库
+
 
 .. _MoHand: http://mohand.rtfd.io/
 .. _pexpect: http://pexpect.rtfd.io/
 .. _virtualenv: http://virtualenv.pypa.io/
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
 .. _正则验证工具: https://tool.moorehy.com/regex/
+.. _click: http://click.pocoo.org/6/
