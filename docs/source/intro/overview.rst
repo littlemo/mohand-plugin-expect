@@ -65,7 +65,7 @@
     Last login: Tue May 15 10:06:23 2018 from bastion
     moore@dev-moore.idc1:~$
 
-为实现该登录流程，我们可以在 ``handfile.py`` 中编写如下::
+为实现该登录流程，我们可以在当前路径下的 ``handfile.py`` 中编写如下::
 
     import re
     from mohand.hands import hand
