@@ -65,8 +65,66 @@
     Last login: Tue May 15 10:06:23 2018 from bastion
     moore@dev-moore.idc1:~$
 
+为实现该登录流程，我们可以在 ``handfile.py`` 中编写如下::
+
+    import re
+    from mohand.hands import hand
+
+    ACCOUNT_USERNAME = 'moore'
+    ACCOUNT_PASSWORD = 'xxooxxooyo~~'
+
+    @hand.expect(
+        cmd='ssh -o PreferredAuthentications=password moore@bastion -p 22')
+    def test(o):
+        """自动登录测试"""
+        o.action(
+            expect=re.compile(r'[Pp]assword:'),
+            sendline=ACCOUNT_PASSWORD)
+        o.action(
+            expect='Please select system:',
+            sendline=re.compile(r'(\d+):\s+idc-dev'),
+            before='System List')
+        o.action(
+            expect='login:',
+            sendline=ACCOUNT_USERNAME,
+            before='Connecting to')
+        o.action(
+            expect='password:',
+            sendline=ACCOUNT_PASSWORD)
+
+以上即为一个最小可用登录命令，注意此处分别在第一个 action 的 expect 参数与第二个 action
+的 sendline 中使用了正则表达式，主要为了演示可以这样使用，而非必须，但为了更好地鲁棒性，
+建议多使用正则来实现。
+
+.. note::
+
+    如果您不善于书写正则表达式的话，可以尝试我修改&部署的一个 `正则验证工具`_
+
+将其保存到当前路径下，然后执行 ``mohand`` 命令::
+
+    $ mohand
+    Usage: mohand [OPTIONS] COMMAND [ARGS]...
+
+      通用自动化处理工具
+
+      详情参考 `GitHub <https://github.com/littlemo/mohand>`_
+
+    Options:
+      --author   作者信息
+      --version  版本信息
+      --help     Show this message and exit.
+
+    Commands:
+      test  自动登录测试
+
+我们可以看到刚刚编写的 ``test`` 函数已经被注册成为了一个子命令，
+通过执行该子命令我们就可以实现自动化登录到目标主机了::
+
+    $ mohand test
+
 
 .. _MoHand: http://mohand.rtfd.io/
 .. _pexpect: http://pexpect.rtfd.io/
 .. _virtualenv: http://virtualenv.pypa.io/
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
+.. _正则验证工具: https://tool.moorehy.com/regex/
