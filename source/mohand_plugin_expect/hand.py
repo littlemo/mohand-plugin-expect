@@ -103,7 +103,8 @@ class Child(object):
         发送 ``sendline``
 
         :param str expect: 期望的输入匹配行，支持多对象的列表，以及正则表达式对象
-            如：['good', 'bad', re.compile(r'\d'), pexpect.EOF, pexpect.TIMEOUT]
+            如：['good', 'bad', re.compile(r'\\\d'),
+            pexpect.EOF, pexpect.TIMEOUT]
         :param sendline: 发送一行字串，若为正则表达式，则发送匹配到的结果字串
         :type sendline: str or regex
         :param str before: 可选，用来辅助判定期望的输入匹配行，默认为 ``''``
