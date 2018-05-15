@@ -20,6 +20,25 @@
     在开发本插件时，也遇到了同样的问题，但强迫症实在不能忍，实在太膈应了，于是通过额外监听
     ``SIGWINCH`` 系统信号，来针对变更自动设置窗口的 ``stty`` 大小
 
+安装方法
+========
+
+您可以通过 ``pip`` 进行安装，本包仅在 ``Python 3.X`` 下测试通过::
+
+    pip3 install mohand-plugin-expect
+
+.. attention::
+
+    本插件已被添加进 ``mohand`` 的 ``install_requires`` 中，故已无需单独安装
+
+.. note::
+
+    建议使用 `virtualenv`_ 来安装，避免与其他包产生依赖冲突。
+
+    如果您感兴趣的话，可以了解下 `virtualenvwrapper`_ ，用其来管理虚拟环境可谓丝般顺滑！
+
 
 .. _MoHand: http://mohand.rtfd.io/
 .. _pexpect: http://pexpect.rtfd.io/
+.. _virtualenv: http://virtualenv.pypa.io/
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
