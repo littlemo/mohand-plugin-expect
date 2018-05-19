@@ -1,3 +1,4 @@
+# encoding=utf8
 import re
 import sys
 import logging
