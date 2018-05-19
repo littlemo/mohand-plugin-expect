@@ -11,6 +11,15 @@ import pexpect
 
 from mohand.hands import hand
 
+if sys.version > '3':
+    PY3 = True
+else:
+    PY3 = False
+
+if PY3:
+    def unicode(s):
+        return s
+
 LOG_FORMAT = "[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s"
 logging.basicConfig(
     level=logging.WARN,
@@ -118,6 +127,12 @@ class Child(object):
         """
         for i in range(0, retry):
             log.debug('第{}次执行'.format(i + 1))
+            if not PY3:
+                if not isinstance(expect, list):
+                    expect = [expect]
+                for i, e in enumerate(expect):
+                    if isinstance(e, str):
+                        expect[i] = unicode(e)
             _index = self.child.expect(expect, timeout=timeout)
             if expect_callback and callable(expect_callback):
                 expect_callback(_index)
