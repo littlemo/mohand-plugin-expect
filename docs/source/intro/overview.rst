@@ -27,6 +27,12 @@
 
     pip3 install mohand-plugin-expect
 
+.. hint::
+
+    从 ``v1.0.1`` 版本开始，增加了对 ``Python 2.X`` 的支持，但由于我主要在 **Py3**
+    环境下使用，所以强烈建议您在 **Py3** 下使用。如果您在 **Py2** 环境下遇到任何异常，
+    可以及时提 `Issues`_ 给我，我会努力在搬砖的间隙进行修复。。。
+
 .. attention::
 
     本插件已被添加进 ``mohand`` 的 ``install_requires`` 中，故已无需单独安装
@@ -158,3 +164,4 @@
 .. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/
 .. _正则验证工具: https://tool.moorehy.com/regex/
 .. _click: http://click.pocoo.org/6/
+.. _Issues: https://github.com/littlemo/mohand-plugin-expect/issues
