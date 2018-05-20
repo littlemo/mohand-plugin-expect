@@ -16,10 +16,6 @@ if sys.version > '3':
 else:
     PY3 = False
 
-if PY3:
-    def unicode(s):
-        return s
-
 LOG_FORMAT = "[%(asctime)s][%(name)s:%(lineno)s][%(levelname)s] %(message)s"
 logging.basicConfig(
     level=logging.WARN,
