@@ -103,9 +103,22 @@ class Child(object):
             Child.child.setwinsize(a[0], a[1])
             log.debug('重设窗口大小为: {} 行 | {} 列'.format(a[0], a[1]))
 
+    def __print_stdout(self, before, after, newline=False):
+        """
+        打印终端标准输出
+
+        :param str before: 前文
+        :param str after: 后文
+        :param bool newline: 行尾换行，默认为 False
+        """
+        sys.stdout.write('{before}{after}{newline}'.format(
+            before=before,
+            after=after,
+            newline='\n' if newline else ''))
+
     def action(
             self, expect, sendline, before='',
-            retry=3, timeout=-1, expect_callback=None, **kwargs):
+            retry=3, timeout=5, expect_callback=None, **kwargs):
         """
         执行一个action，当检测到符合指定 ``before`` 的 ``expect`` 后，
         发送 ``sendline``
@@ -116,41 +129,46 @@ class Child(object):
         :param sendline: 发送一行字串，若为正则表达式，则发送匹配到的结果字串
         :type sendline: str or regex
         :param str before: 可选，用来辅助判定期望的输入匹配行，默认为 ``''``
-        :param int retry: 可选，默认为 ``3`` ，重试次数
-        :param int timeout: 可选，单位秒，默认为 ``-1`` (无限阻塞)，
+        :param int retry: (已弃用)可选，默认为 ``3`` ，重试次数
+        :param int timeout: 可选，单位秒，默认为 ``5`` ，
             单条动作中 ``expect`` 的超时时间
         :param expect_callback: expect 的回调函数，传入 expect 列表中匹配到的对象的索引，
             可在其中执行定制的处理逻辑
         :type expect_callback: function(index)
         """
-        for i in range(0, retry):
-            log.debug('第{}次执行'.format(i + 1))
-            if not PY3:
-                if not isinstance(expect, list):
-                    expect = [expect]
-                for i, e in enumerate(expect):
-                    if isinstance(e, str):
-                        expect[i] = unicode(e)
+        if not PY3:
+            if not isinstance(expect, list):
+                expect = [expect]
+            for i, e in enumerate(expect):
+                if isinstance(e, str):
+                    expect[i] = unicode(e)
+        try:
             _index = self.child.expect(expect, timeout=timeout)
-            if expect_callback and callable(expect_callback):
-                expect_callback(_index)
-            _before = self.child.before
-            _after = self.child.after
-            sys.stdout.write('{}{}'.format(_before, _after))
-            if before not in _before:
-                continue
-            if isinstance(sendline, type(re.compile(''))):
-                # 如果入参是正则对象，则尝试在 before 中匹配到真正的 sendline 字串
-                match = sendline.search(_before)
-                if not match:
-                    log.error('未从传入的sendline正则中匹配到字串')
-                    continue
-                sendline = match.groups()[0]
-            log.debug('待发送字串: {}'.format(sendline))
-            self.child.sendline(sendline)
-            break
-        else:
-            log.warning('重试次数用尽，仍未找到: {}'.format(expect))
+        except pexpect.exceptions.TIMEOUT as e:
+            self.__print_stdout(
+                self.child.before, self.child.after, newline=True)
+            log.error('执行超时，未遇到期望的匹配字串：{}'.format(
+                [getattr(e, 'pattern', e) for e in expect]))
+            log.debug('异常堆栈信息：{}'.format(e))
+            return
+        if expect_callback and callable(expect_callback):
+            expect_callback(_index)
+        _before = self.child.before
+        _after = self.child.after
+        self.__print_stdout(_before, _after)
+        if before not in _before:
+            return
+        if isinstance(sendline, type(re.compile(''))):
+            # 如果入参是正则对象，则尝试在 before 中匹配到真正的 sendline 字串
+            match = sendline.search(_before)
+            if not match:
+                log.error(
+                    '未从传入的sendline正则({sendline})中匹配到字串'.format(
+                        sendline=sendline.pattern))
+                return
+            sendline = match.groups()[0]
+        log.debug('待发送字串: {}'.format(sendline))
+        self.child.sendline(sendline)
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is None:
