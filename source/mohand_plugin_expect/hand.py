@@ -89,6 +89,8 @@ class Child(object):
         signal.signal(signal.SIGWINCH, Child.sigwinch_passthrough)
 
     def __enter__(self):
+        # 进入 spawn 后，强制触发窗口尺寸变化信号，初始化窗口大小设置
+        self.sigwinch_passthrough(None, None)
         return self
 
     @staticmethod
@@ -169,8 +171,6 @@ class Child(object):
 
     def __exit__(self, exception_type, exception_value, traceback):
         if exception_type is None:
-            # 将控制权交换给用户前，强制触发窗口尺寸变化信号，初始化窗口大小设置
-            self.sigwinch_passthrough(None, None)
             self.child.logfile_read = None
             self.child.interact()
             return False
