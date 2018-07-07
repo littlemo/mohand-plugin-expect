@@ -85,6 +85,7 @@ class Child(object):
         _encodeing = kwargs.get('encoding', 'utf-8')
         self.child = Child.child = pexpect.spawn(
             _cmd, timeout=_timeout, encoding=_encodeing)
+        self.child.logfile_read = sys.stdout
         signal.signal(signal.SIGWINCH, Child.sigwinch_passthrough)
 
     def __enter__(self):
@@ -145,8 +146,6 @@ class Child(object):
         try:
             _index = self.child.expect(expect, timeout=timeout)
         except pexpect.exceptions.TIMEOUT as e:
-            self.__print_stdout(
-                self.child.before, self.child.after, newline=True)
             log.error('执行超时，未遇到期望的匹配字串：{}'.format(
                 [getattr(e, 'pattern', e) for e in expect]))
             log.debug('异常堆栈信息：{}'.format(e))
@@ -154,8 +153,6 @@ class Child(object):
         if expect_callback and callable(expect_callback):
             expect_callback(_index)
         _before = self.child.before
-        _after = self.child.after
-        self.__print_stdout(_before, _after)
         if before not in _before:
             return
         if isinstance(sendline, type(re.compile(''))):
