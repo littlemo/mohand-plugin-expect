@@ -139,9 +139,10 @@ class Child(object):
             可在其中执行定制的处理逻辑
         :type expect_callback: function(index)
         """
+        if not isinstance(expect, list):
+            expect = [expect]
+
         if not PY3:
-            if not isinstance(expect, list):
-                expect = [expect]
             for i, e in enumerate(expect):
                 if isinstance(e, str):
                     expect[i] = unicode(e)
