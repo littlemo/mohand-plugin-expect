@@ -99,9 +99,10 @@ class Child(object):
         处理窗口尺寸变化信号，并相应更新 tty 窗口大小设置
         """
         log.debug('Received signal: {}, {}'.format(sig, data))
-        s = struct.pack("HHHH", 0, 0, 0, 0)
+        s = struct.pack(str("HHHH"), 0, 0, 0, 0)
         a = struct.unpack(
-            'hhhh', fcntl.ioctl(sys.stdout.fileno(), termios.TIOCGWINSZ, s))
+            str('hhhh'),
+            fcntl.ioctl(sys.stdout.fileno(), termios.TIOCGWINSZ, s))
         if Child.child and not Child.child.closed:
             Child.child.setwinsize(a[0], a[1])
             log.debug('重设窗口大小为: {} 行 | {} 列'.format(a[0], a[1]))
