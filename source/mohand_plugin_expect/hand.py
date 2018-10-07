@@ -180,5 +180,9 @@ class Child(object):
             # 返回 False 将异常抛出
             return False
         else:
+            if 'End Of File (EOF)' in exception_value and \
+                    'Connection closed by' in traceback:
+                log.error('连接被目标主机关闭！请检查网络状态！')
+                return False
             log.error('other error: {}\n{}'.format(exception_value, traceback))
             return False
